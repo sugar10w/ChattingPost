@@ -50,7 +50,7 @@ namespace Circles
             writer.WritePropertyName("colorId"); writer.WriteValue(user.ColorId);
             writer.WriteEndObject();
             writer.Flush();
-            Send(sw.GetStringBuilder().ToString());           
+            Send(sw.GetStringBuilder().ToString());
            
             threadListening = new Thread(ListenServer);
             threadListening.IsBackground = true;
@@ -75,6 +75,7 @@ namespace Circles
                 catch (SocketException e)
                 {
                     System.Windows.MessageBox.Show("服务器连接错误！您已经离线。");
+                    InfoBox.AddInfo("服务器连接错误！您已经离线。[Listening failed]");
                     return;
                 }
 
@@ -106,7 +107,8 @@ namespace Circles
 
                         if (j["action"].ToString().Equals("send"))
                         {
-                            System.Windows.MessageBox.Show(j["content"].ToString());
+                         //   System.Windows.MessageBox.Show(j["content"].ToString());
+                            InfoBox.AddInfo(j["content"].ToString());
                         }
                         else
                             MessagesKeeper.RefreshMessage(j);
@@ -160,7 +162,8 @@ namespace Circles
             }
             catch (SocketException e)
             {
-                System.Windows.MessageBox.Show("服务器连接错误！您已经离线。");
+                //System.Windows.MessageBox.Show("服务器连接错误！您已经离线。");
+                InfoBox.AddInfo("服务器连接错误！您已经离线。[Sending failed]");
                 return 1;
             }
 

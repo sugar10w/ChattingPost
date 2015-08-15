@@ -76,6 +76,7 @@ namespace Circles
                     new Window1().Show();
                     this.Close();
                 }
+                else this.Close();
             }
         }
     }

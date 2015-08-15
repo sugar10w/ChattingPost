@@ -151,7 +151,7 @@ def tcplink(sock, addr):
 		if (j["action"]=="send"):
 			addMessage(j)
 		elif (j["action"]=="get"):
-			sendToAll(getMessage(j["id"]))
+			sock.send(getMessage(j["id"]))
 
 try:
 	print "Trying to load the messages... ",

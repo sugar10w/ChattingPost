@@ -26,6 +26,8 @@ namespace Circles
         Random random = new Random();
         int randomMove = 20;
 
+        int cntDownSysInfoMax = 10, cntDownSysInfo = 0;
+
         public Window1()
         {
             InitializeComponent();
@@ -240,6 +242,7 @@ namespace Circles
             }
         }
 
+        //Remove all the Textblocks in the gridMessages
         private void ClearMessages()
         {
             foreach (Object obj in gridMessages.Children)
@@ -268,12 +271,16 @@ namespace Circles
             ButtonBack.Background = new SolidColorBrush(user.Color);
             ButtonBack.PreviewMouseUp += ButtonBack_PreviewMouseUp;
 
+            TextSysInfo.Background = new SolidColorBrush(user.LightColor);
+
             labelUserName.Content = user.NickName;
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(200);
             timer.Tick += timer1_Tick;
             timer.Start();
+
+            cntDownSysInfoMax = 5000 / (int)timer.Interval.TotalMilliseconds;
 
             labelUserName.MouseUp += labelUserName_MouseUp;
         }
@@ -304,6 +311,16 @@ namespace Circles
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if (cntDownSysInfo > 0) --cntDownSysInfo;
+            if (cntDownSysInfo > 0) TextSysInfo.Visibility = Visibility.Visible;
+            else TextSysInfo.Visibility = Visibility.Collapsed;
+            if (InfoBox.Refreshed)
+            {
+                TextSysInfo.Text = InfoBox.Info;
+                cntDownSysInfo = cntDownSysInfoMax;
+            }
+          //  Console.Write(cntDownSysInfo+InfoBox.Refreshed.ToString()+" ");
+
             ShowMe();
         }
 
@@ -313,7 +330,8 @@ namespace Circles
             {
                 string str = textBoxInput.Text.Trim();
                 textBoxInput.Text = "";
-                if (!str.Equals("")) ClientSocket.Submit(str, currentCenterId);
+                if (!str.Equals(""))
+                    if (ClientSocket.Submit(str, currentCenterId) == 1) InfoBox.AddInfo("信息\""+str+"\"发送失败。");
             }
         }
 

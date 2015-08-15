@@ -18,6 +18,7 @@ namespace Circles
 
         Color color;        
         public Color Color { get { return color; } }
+        public Color LightColor { get { return MyColor.HSI(colorId, 0.1); } }
 
         public User(string nickname, string password)
         {

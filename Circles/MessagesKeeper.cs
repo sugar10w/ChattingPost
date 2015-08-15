@@ -38,7 +38,13 @@ namespace Circles
                     }
 
                     int id = gettingIdList[0], deep = gettingDeepList[0];
-                    if (!gettingSendedList[0]) ClientSocket.Get(id);
+                    if (!gettingSendedList[0])
+                        if (ClientSocket.Get(id) != 0)
+                        {
+                            gettingDeepList.Clear();
+                            gettingIdList.Clear();
+                            gettingSendedList.Clear();
+                        }
 
                     if (gettingIdList.Count == 0 || gettingDeepList.Count == 0 || gettingSendedList.Count == 0) continue;
                     gettingIdList.RemoveAt(0); gettingDeepList.RemoveAt(0); gettingSendedList.RemoveAt(0);
@@ -67,7 +73,7 @@ namespace Circles
                 gettingDeepList.Add(deep);
                 gettingSendedList.Add(false);
             }
-
+           
             if (threadAsking == null) StartAsking();
         }
        
