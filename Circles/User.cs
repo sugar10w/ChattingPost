@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Newtonsoft.Json.Linq;
 
 namespace Circles
 {
@@ -28,5 +29,41 @@ namespace Circles
             color = MyColor.HSI(colorId);
         }
 
+
+        static private bool loginFlag = false, wrongPassword = false;
+        static public bool LoginFlag { get { return loginFlag; } }
+        
+        static public bool WrongPassword
+        {
+            get
+            {
+                if (!wrongPassword) return false;
+                else
+                {
+                    wrongPassword = false;
+                    return true;
+                }
+            }
+        }
+
+        static public void Login(JObject j)
+        {
+            if (j["user"].ToString().Equals("wrong"))
+            {
+                loginFlag = false;
+                wrongPassword = true;
+                MessagesKeeper.Reset();
+                ClientSocket.Stop();
+            }
+            else if (j["user"].ToString().Equals("accept"))
+            {
+                loginFlag = true;
+            }
+            else if (j["user"].ToString().Equals("new"))
+            {
+                loginFlag = true;
+                InfoBox.AddInfo("新用户"+j["nickname"].ToString()+"已创建。");
+            }
+        }
     }
 }

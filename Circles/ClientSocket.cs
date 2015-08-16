@@ -65,6 +65,7 @@ namespace Circles
         {
             while (true)
             {
+                bool failed = false;
                 byte[] result = new byte[1024];
                 int receiveLength = 0;
 
@@ -74,14 +75,14 @@ namespace Circles
                 }
                 catch (SocketException e)
                 {
-                    System.Windows.MessageBox.Show("服务器连接错误！您已经离线。");
-                    InfoBox.AddInfo("服务器连接错误！您已经离线。[Listening failed]");
+                    InfoBox.AddInfo("服务器连接错误！您已离线。[Listening failed]");
+
                     return;
+
+
                 }
 
                 string s = Encoding.UTF8.GetString(result, 0, receiveLength);
-
-                //      Console.WriteLine("RECEIVE: "+s);
 
                 while (s.Contains("}"))
                 {
@@ -106,12 +107,11 @@ namespace Circles
                         j = (JObject)JsonConvert.DeserializeObject(s0);
 
                         if (j["action"].ToString().Equals("send"))
-                        {
-                         //   System.Windows.MessageBox.Show(j["content"].ToString());
                             InfoBox.AddInfo(j["content"].ToString());
-                        }
-                        else
+                        else if (j["action"].ToString().Equals("get"))
                             MessagesKeeper.RefreshMessage(j);
+                        else if (j["action"].ToString().Equals("user"))
+                            User.Login(j);
                     }
                     catch
                     {
@@ -154,7 +154,6 @@ namespace Circles
         {
 
             byte[] bs = Encoding.UTF8.GetBytes(s);
-       //     Console.WriteLine("SEND: "+s);
 
             try
             {
@@ -162,7 +161,6 @@ namespace Circles
             }
             catch (SocketException e)
             {
-                //System.Windows.MessageBox.Show("服务器连接错误！您已经离线。");
                 InfoBox.AddInfo("服务器连接错误！您已经离线。[Sending failed]");
                 return 1;
             }
@@ -170,5 +168,10 @@ namespace Circles
             return 0;
         }
 
+        static public void Stop()
+        {
+            soc.Close();
+            threadListening.Abort();
+        }
     }
 }

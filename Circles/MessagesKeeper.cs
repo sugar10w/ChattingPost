@@ -32,20 +32,19 @@ namespace Circles
                 {
                     if (gettingDeepList.Count != gettingIdList.Count || gettingIdList.Count != gettingSendedList.Count || gettingSendedList.Count != gettingDeepList.Count)
                     {
-                        Console.WriteLine("ERROR:" + gettingDeepList.Count + "," + gettingIdList.Count + "," + gettingSendedList.Count);
                         gettingDeepList = new List<int>(); gettingIdList = new List<int>(); gettingSendedList = new List<bool>();
                         continue;
                     }
 
                     int id = gettingIdList[0], deep = gettingDeepList[0];
+
                     if (!gettingSendedList[0])
+                    {
                         if (ClientSocket.Get(id) != 0)
                         {
-                            gettingDeepList.Clear();
-                            gettingIdList.Clear();
-                            gettingSendedList.Clear();
+                            Reset();
                         }
-
+                    }
                     if (gettingIdList.Count == 0 || gettingDeepList.Count == 0 || gettingSendedList.Count == 0) continue;
                     gettingIdList.RemoveAt(0); gettingDeepList.RemoveAt(0); gettingSendedList.RemoveAt(0);
                     gettingIdList.Add(id); gettingDeepList.Add(deep); gettingSendedList.Add(true);
@@ -103,7 +102,8 @@ namespace Circles
         }
 
         static public Message Get(int id, int deep = 0)
-        {            
+        {
+
             if (messages.ContainsKey(id))
             {
                 AddGet(id, deep);
@@ -116,6 +116,17 @@ namespace Circles
                 AddGet(id, deep);
                 return null;
             }
+        }
+
+        static public void Reset()
+        {
+            Console.WriteLine("RESET");
+
+            gettingDeepList.Clear();
+            gettingIdList.Clear();
+            gettingSendedList.Clear();
+
+            
         }
     }
 }

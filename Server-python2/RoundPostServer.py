@@ -10,6 +10,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+registeredUsers=[];
+
 messages=[];
 userList=[];
 
@@ -87,11 +89,24 @@ def getMessage(id):
 	return json.dumps(j0);
 
 def saveMessage():
-	print "Trying to save the messages... ",
-	output = open('data.pkl', 'wb');
-	pickle.dump(messages, output);
-	output.close();
-	print "The messages has been saved."
+	try:
+		print "Messages... ",
+		output = open('data.pkl', 'wb');
+		pickle.dump(messages, output);
+		output.close();
+		print "saved."
+	except:
+		print "--- --- FAILED --- ---"
+	
+def saveUsers():
+	try:	
+		print "Users... ",
+		output=open("user.pkl","wb");
+		pickle.dump(registeredUsers, output);
+		output.close();
+		print "saved."
+	except:
+		print "--- --- FAILED --- ---"
 	
 def allUserNames():
 	str=""
@@ -130,10 +145,38 @@ def sendToAll(str):
 def tcplink(sock, addr):
 	str=sock.recv(1024)
 	j=json.loads(str)
-	newUser=User(j["nickname"],j["password"],j["colorId"]);
-	userList.append((sock,addr,newUser))
 	
-	userName=newUser.nickname;
+	userName=j["nickname"];
+	
+	newUser=User(j["nickname"],j["password"],j["colorId"]);
+	
+	userFound=False;
+	userPassword=False;
+	for u0 in registeredUsers:
+		if (u0.nickname==userName):
+			userFound=True;
+			if (u0.password==j["password"]):
+				userPassword=True;
+				newUser=u0;
+				break;
+	
+	if (userFound and not userPassword):
+		j0={"action":"user","user":"wrong","nickname":userName};
+		j=json.dumps(j0);
+		sock.send(j);
+		return 1;
+	if (userFound and userPassword):
+		j0={"action":"user","user":"accept","nickname":userName};
+		j=json.dumps(j0);
+		sock.send(j);
+	if (not userFound):
+		j0={"action":"user","user":"new","nickname":userName};
+		j=json.dumps(j0);
+		sock.send(j);
+		registeredUsers.append(newUser);
+		saveUsers();
+		
+	userList.append((sock,addr,newUser));
 	
 	messageToAll("用户 "+userName+" 已进入.")
 	messageToAll(allUserNames())
@@ -151,18 +194,30 @@ def tcplink(sock, addr):
 		if (j["action"]=="send"):
 			addMessage(j)
 		elif (j["action"]=="get"):
+			print id;
 			sock.send(getMessage(j["id"]))
 
 try:
-	print "Trying to load the messages... ",
+	print "Users...",
+	pkl_file=open('user.pkl','rb');
+	registeredUsers=pickle.load(pkl_file);
+	pkl_file.close();
+	print "loaded."
+except:
+	registeredUsers=[];
+	print "--- --- FAILED --- ---"
+			
+try:
+	print "Messages... ",
 	pkl_file = open('data.pkl', 'rb')
 	messages = pickle.load(pkl_file)
 	pkl_file.close();
-	print "The messages has been loaded."
+	print "loaded."
 except:
 	messages=[];
 	messages.append(Message(0,"",-1,"root",240)); # root of the forest.
-			
+	print "--- --- FAILED --- ---"
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("", 9999))
 s.listen(5)

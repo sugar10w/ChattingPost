@@ -61,6 +61,17 @@ namespace Circles
             rect2.Fill = new SolidColorBrush(MyColor.HSI(currentColorId+144));
             rect3.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-144));
             rect4.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-72));
+
+            if (User.WrongPassword)
+            {
+                MessageBox.Show("密码错误！");
+            }
+
+            if (User.LoginFlag)
+            {
+                NextStage();
+            }
+
         }
 
         private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
@@ -69,7 +80,7 @@ namespace Circles
             tartgetColorId = MyColor.NameColorId(s);
         }
 
-        private void textBoxPassword_KeyUp(object sender, KeyEventArgs e)
+        private void textBoxPassword_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -77,13 +88,15 @@ namespace Circles
                 string password = textBoxPassword.Password.TrimEnd();
                 int t = ClientSocket.ConnectServer(userName, password);
                 Console.WriteLine("Tring to connect the server");
-                if (t == 0)
-                {
-                    new Window1().Show();
-                    this.Close();
-                }
-                else this.Close();
+                if (t == 1) this.Close();
             }
+        }
+
+        private void NextStage()
+        {
+            new Window1().Show();
+            timer.Stop();
+            this.Close();
         }
     }
 }

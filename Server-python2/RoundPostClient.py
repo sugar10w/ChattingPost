@@ -5,11 +5,13 @@ import threading
 import sys
 import json
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+reload(sys);
+sys.setdefaultencoding('utf8');
 
-serverIP='127.0.0.1'
-serverPort=9999;
+SERVERIP='127.0.0.1';
+SERVERPORT=9999;
+
+LOGINFLAG=False; 
 
 class User(object):
 	nickname="";
@@ -21,10 +23,10 @@ class User(object):
 		self.colorId=colorId;
 
 def listenning(sock, addr):
-	while True:		
+	global LOGINFLAG;
+	while True:	
 		try:
 			data = sock.recv(1024);
-	
 		except:
 			sock.close()
 			print("Failed to connect the server. You've been offline.")
@@ -37,17 +39,28 @@ def listenning(sock, addr):
 				print j["content"].decode('utf-8').encode('gbk', 'ignore');
 			else:
 				print ("%d"%j["id"]+" "+j["senderName"]+":\t"+j["content"]).decode('utf-8').encode('gbk', 'ignore')
-		else:
+		elif (j["action"]=="get"):
 			print ("%d"%j["id"]+" "+j["senderName"]+":\t"+j["content"]).decode('utf-8').encode('gbk', 'ignore')
 			print j["sons"],
 			print (" colorId=%d"%j["colorId"]+" hot=%d"%j["hot"])
-			
+		elif (j["action"]=="user"):
+			if (j["user"]=="wrong"):
+				LOGINFLAG=False; 
+				print "Sorry, wrong passwords.";
+			elif (j["user"]=="new"):
+				LOGINFLAG=True; 
+				print "The user has just been registered.";
+			elif (j["user"]=="accept"):
+				LOGINFLAG=True; 
+				print "Log in successed.";
 		
-print "Input your name:"
-userName=raw_input()
+print "Input your name:     ",
+userName=raw_input();
+print "Input your password: ",
+userPassword=raw_input();
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-addr=(serverIP, serverPort)
+addr=(SERVERIP, SERVERPORT)
 
 try:
 	s.connect(addr)
@@ -59,16 +72,19 @@ c=0;
 for i in userName: # such an easy way to calculate the colorId.
 	c+=ord(i);	
 c%=360;
-user=User(userName,"",c);
+user=User(userName,userPassword,c);
 
-j0={'nickname':user.nickname,"password":user.password,"colorId":user.colorId}
+j0={"nickname":user.nickname,"password":user.password,"colorId":user.colorId}
 s.send(json.dumps(j0));
 
 t = threading.Thread(target=listenning, args=(s, addr))
 t.start()
 
-while True:	
+while True:
 	action=raw_input();
+	if (not LOGINFLAG):
+		print "You haven't logged in."
+		continue;
 	if "s" in action:
 		try:
 			father=int(raw_input("input the ID to RETURN: "));
@@ -85,4 +101,4 @@ while True:
 		j1={"action":"get","id":father}
 		s.send(json.dumps(j1));
 		
-s.close()
+s.close();

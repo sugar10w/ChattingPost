@@ -9,7 +9,7 @@
         <Rectangle x:Name="rect1" HorizontalAlignment="Left" Height="91" Margin="79,200,0,0" VerticalAlignment="Top" Width="91"/>
         <Rectangle x:Name="rect0" HorizontalAlignment="Left" Height="230" VerticalAlignment="Top" Width="230" Margin="106,25,0,0"/>
         <TextBox x:Name="textBoxUserName" HorizontalAlignment="Left" Height="29" Margin="295,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="176" FontSize="20" TextChanged="TextBox_TextChanged_1" TabIndex="0"/>
-        <PasswordBox x:Name="textBoxPassword" HorizontalAlignment="Left" Margin="295,134,0,0" VerticalAlignment="Top" Width="176" Height="29" FontSize="20" KeyUp="textBoxPassword_KeyUp" TabIndex="1"/>
+        <PasswordBox x:Name="textBoxPassword" HorizontalAlignment="Left" Margin="295,134,0,0" VerticalAlignment="Top" Width="176" Height="29" FontSize="20" TabIndex="1" KeyDown="textBoxPassword_KeyDown"/>
         <Label Content="用户名" HorizontalAlignment="Left" Margin="220,100,0,0" VerticalAlignment="Top" FontSize="20"/>
         <Label Content="密码" HorizontalAlignment="Left" Margin="240,128,0,0" VerticalAlignment="Top" FontSize="20"/>
 
