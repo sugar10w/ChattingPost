@@ -28,6 +28,12 @@ namespace Circles
         public MainWindow()
         {
             InitializeComponent();
+
+            rect0.Fill = new SolidColorBrush(MyColor.HSI(currentColorId));         
+            rect1.Fill = new SolidColorBrush(MyColor.HSI(currentColorId+72));
+            rect2.Fill = new SolidColorBrush(MyColor.HSI(currentColorId+144));
+            rect3.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-144));
+            rect4.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-72));
         }
 
         private void Grid_Loaded_1(object sender, RoutedEventArgs e)

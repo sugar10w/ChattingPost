@@ -19,7 +19,7 @@ namespace Circles
         static public void AddInfo(string s)
         {
             info = s + "\r\n" + info;
-            if (info.Length > 300) info = info.Substring(0, 300);
+            if (info.Length > 300) info = info.Substring(0, 300)+" ... ";
             refreshed = true;
 
             if (threadClearing == null) StartThread();
