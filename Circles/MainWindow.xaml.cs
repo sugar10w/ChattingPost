@@ -25,6 +25,7 @@ namespace Circles
         private DispatcherTimer timer;
         private static Random random = new Random();
 
+        //构造函数
         public MainWindow()
         {
             InitializeComponent();
@@ -36,6 +37,7 @@ namespace Circles
             rect4.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-72));
         }
 
+        //页面已载入
         private void Grid_Loaded_1(object sender, RoutedEventArgs e)
         {
             timer = new DispatcherTimer();
@@ -46,9 +48,11 @@ namespace Circles
             Keyboard.Focus(textBoxUserName);
         }
 
+        //定时检查
         private void timer1_Tick(object sender, EventArgs e)
         {
-          int d = currentColorId - tartgetColorId;
+            //颜色动画控制
+            int d = currentColorId - tartgetColorId;
             if (d < -180) d += 360;
             else if (d > 180) d -= 360;
 
@@ -62,11 +66,11 @@ namespace Circles
             rect3.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-144));
             rect4.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-72));
 
+            //用户登录检查
             if (User.WrongPassword)
             {
                 MessageBox.Show("密码错误！");
             }
-
             if (User.LoginFlag)
             {
                 NextStage();
@@ -74,12 +78,14 @@ namespace Circles
 
         }
 
+        //用户名框响应
         private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
         {
             string s = textBoxUserName.Text;
             tartgetColorId = MyColor.NameColorId(s);
         }
 
+        //密码框响应
         private void textBoxPassword_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -92,6 +98,7 @@ namespace Circles
             }
         }
 
+        //进入聊天页面
         private void NextStage()
         {
             new Window1().Show();

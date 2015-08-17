@@ -15,14 +15,13 @@ namespace Circles
 {
     class ClientSocket
     {
-        static Thread threadListening;
-
         static int port = 9999;
         static string host = "127.0.0.1";        
         static Socket soc;
 
         static public User user = null;
 
+        //连接服务器
         public static int ConnectServer(string name,string password="")
         {
             user = new User(name, password);
@@ -51,35 +50,38 @@ namespace Circles
             writer.WriteEndObject();
             writer.Flush();
             Send(sw.GetStringBuilder().ToString());
-           
-            threadListening = new Thread(ListenServer);
-            threadListening.IsBackground = true;
-            threadListening.Start();
+
+            startListening();
 
             MessagesKeeper.Get(0, 3);
 
             return 0;
         }
 
-        private static void ListenServer()
+        //持续监听服务器。在进程中启动防止监听卡死。
+        static Thread threadListening;
+        static private void startListening()
+        {
+            threadListening = new Thread(listenServer);
+            threadListening.IsBackground = true;
+            threadListening.Start();
+        }
+        static private void listenServer()
         {
             while (true)
             {
-                bool failed = false;
                 byte[] result = new byte[1024];
                 int receiveLength = 0;
 
                 try
                 {
-                    receiveLength = soc.Receive(result);
+                    if (soc != null) receiveLength = soc.Receive(result);
+                    else throw new SocketException();
                 }
                 catch (SocketException e)
                 {
                     InfoBox.AddInfo("服务器连接错误！您已离线。[Listening failed]");
-
                     return;
-
-
                 }
 
                 string s = Encoding.UTF8.GetString(result, 0, receiveLength);
@@ -120,7 +122,16 @@ namespace Circles
                 }
             }
         }
+        
+        //密码错误时，ClientSocket暂停
+        static public void Stop()
+        {
+            soc.Close();
+            soc = null;
+            threadListening.Abort();
+        }
 
+        //接收的UI的发帖请求，向服务器发送"send"请求
         public static int Submit(String s,int fatherId=0)
         {
             s = s.Trim();
@@ -138,6 +149,8 @@ namespace Circles
             return Send(sw.GetStringBuilder().ToString());
 
         }
+        
+        //接收MessagesKeeper.asking的请求，对服务器发送"get"请求
         public static int Get(int id = 0)
         {
             StringWriter sw = new StringWriter();
@@ -150,9 +163,9 @@ namespace Circles
             return Send(sw.GetStringBuilder().ToString());
         }
 
+        //发送信息
         private static int Send(String s)
         {
-
             byte[] bs = Encoding.UTF8.GetBytes(s);
 
             try
@@ -168,10 +181,5 @@ namespace Circles
             return 0;
         }
 
-        static public void Stop()
-        {
-            soc.Close();
-            threadListening.Abort();
-        }
     }
 }

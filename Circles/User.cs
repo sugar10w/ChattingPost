@@ -29,10 +29,10 @@ namespace Circles
             color = MyColor.HSI(colorId);
         }
 
-
+        //登陆控制
         static private bool loginFlag = false, wrongPassword = false;
         static public bool LoginFlag { get { return loginFlag; } }
-        
+        //检查是否收到了密码错误的提示
         static public bool WrongPassword
         {
             get
@@ -46,6 +46,7 @@ namespace Circles
             }
         }
 
+        //检查用户是否成功登陆
         static public void Login(JObject j)
         {
             if (j["user"].ToString().Equals("wrong"))

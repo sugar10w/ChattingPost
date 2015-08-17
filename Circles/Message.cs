@@ -9,14 +9,12 @@ using System.Windows;
 
 namespace Circles
 {
-    class Message : IComparable
+    class Message
     {
         int id = 0, father = 0, colorId = 0, hot = 0, place= 0;
         string content = "", senderName = "";
-
         Color color;
         Brush brush;
-
         List<int> sonsId = new List<int>();
 
         public string SenderName { get { return senderName; } }
@@ -30,6 +28,7 @@ namespace Circles
         public int Hot { get { return hot; } }
         public int Place { get { return place; } }
 
+        //构造函数
         public Message(JObject j)
         {
             this.id = int.Parse(j["id"].ToString());
@@ -44,6 +43,8 @@ namespace Circles
             this.brush = new SolidColorBrush(this.color);
             this.RefreshSons((JArray)j["sons"]);
         }
+        
+        //与服务器进行同步更新时使用
         public void RefreshMessage(JObject j)
         {
             //    this.id = int.Parse(j["id"].ToString());
@@ -65,6 +66,7 @@ namespace Circles
             }
         }
 
+        //返回实例的UI尺寸
         public double Size(int level = 0)
         {
             return HotSize(this.hot, level);
@@ -74,6 +76,8 @@ namespace Circles
             return FontSize(this.hot, level);
         }
 
+        //UI的位置和尺寸的通用算法
+        //level: -2 父亲；-1 兄弟；0 自己；1 儿子；2 孙子；
         static public Thickness Position(int pos, double distance, Thickness father, double K = 1)
         {
             double l = father.Left,
@@ -140,18 +144,6 @@ namespace Circles
 
             return new Thickness(l * K, t * K, r * K, b * K);
         }
-
-        public int CompareTo(object obj)
-        {
-            if (obj is Message)
-            {
-                Message tmp = obj as Message;
-                if (this.hot > tmp.Hot) return 1; else return 0;
-            }
-
-            return 0;
-        }
-
         static public double HotSize(int hot,int level)
         {
             double size=0;
@@ -188,7 +180,7 @@ namespace Circles
 
             return size;
         }
-
+        
         static public Color LightFontColor = Color.FromArgb(100, 0, 0, 0);
     }
 }

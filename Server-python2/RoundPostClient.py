@@ -31,7 +31,7 @@ def listenning(sock, addr):
 			sock.close()
 			print("Failed to connect the server. You've been offline.")
 			return 1;
-
+		
 		j=json.loads(data);	
 		
 		if (j["action"]=="send"):	

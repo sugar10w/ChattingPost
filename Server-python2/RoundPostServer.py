@@ -194,7 +194,6 @@ def tcplink(sock, addr):
 		if (j["action"]=="send"):
 			addMessage(j)
 		elif (j["action"]=="get"):
-			print id;
 			sock.send(getMessage(j["id"]))
 
 try:

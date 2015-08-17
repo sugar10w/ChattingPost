@@ -9,6 +9,7 @@ namespace Circles
 {
     class MyColor
     {
+        //从色环上提取一个颜色：0红~120绿~240蓝
         static public Color HSI(double H, double alpha = 0.3)
         {
             double R = 0, G = 0, B = 0;
