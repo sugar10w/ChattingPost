@@ -33,7 +33,7 @@ namespace Circles
         {
             InitializeComponent();
 
-            this.user = ClientSocket.user;
+            this.user = ClientSocket.User;
             labelUserName.Content = user.NickName;
 
             rectangleBottom.Fill = new SolidColorBrush(user.Color);
@@ -99,31 +99,6 @@ namespace Circles
         }
 
         //Index页面下的UI控制
-        private ScrollViewer getIndexTextBlock(Message msg)
-        {
-            ScrollViewer sv = null;
-            sv = MainGrid.FindName("scrollViewerIndex"+msg.Id) as ScrollViewer;
-            if (sv != null) return sv;
-
-            sv = new ScrollViewer();
-            sv.Height = msg.Size(0);
-            sv.Width = msg.Size(0);
-            sv.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            sv.Margin = new Thickness(10);
-
-            TextBlock tb = new TextBlock();
-            tb.TextWrapping = TextWrapping.Wrap;
-            tb.Inlines.Add(new Bold(new Run(msg.SenderName+": ")));
-            tb.Inlines.Add(new Run(msg.Content));
-            tb.Background = new SolidColorBrush(msg.Color);
-            tb.FontSize = msg.FontSize() ;
-            tb.MouseUp += tb_MouseUp;
-            tb.Tag = msg.Id;
-
-            sv.Content=tb;
-
-            return sv;
-        }
         private void ShowIndex()
         {
             scrollIndex.Visibility = Visibility.Visible;
@@ -150,91 +125,33 @@ namespace Circles
                 }
             }
         }
-
-        //Message页面下的UI控制
-        private ScrollViewer getTextBlock(Message msg, int level = 0)
+        private ScrollViewer getIndexTextBlock(Message msg)
         {
             ScrollViewer sv = null;
-            TextBlock tb = null;
+            sv = MainGrid.FindName("scrollViewerIndex" + msg.Id) as ScrollViewer;
+            if (sv != null) return sv;
 
-            //查找目标UI是否已存在于容器
-            sv = MainGrid.FindName("scrollViewer" + msg.Id) as ScrollViewer;
-            if (sv == null)
-            {
-                //没有找到，新建UI
-                sv = new ScrollViewer();
-                tb = new TextBlock();
+            sv = new ScrollViewer();
+            sv.Height = msg.Size(0);
+            sv.Width = msg.Size(0);
+            sv.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            sv.Margin = new Thickness(10);
 
-                sv.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                tb.TextWrapping = TextWrapping.Wrap;
-                tb.Inlines.Add(new Bold(new Run(msg.SenderName + ": ")));
-                tb.Inlines.Add(new Run(msg.Content));
-                tb.Background = new SolidColorBrush(msg.Color);
-                tb.MouseUp += tb_MouseUp;
-                tb.Tag = msg.Id;
-                sv.Content = tb;
-            }
-            else
-            {
-                ////已经正常显示则不修改
-                //if (sv.IsVisible) return sv;
-                //否则进行微调
-                tb = sv.Content as TextBlock;
-            }
+            TextBlock tb = new TextBlock();
+            tb.TextWrapping = TextWrapping.Wrap;
+            tb.Inlines.Add(new Bold(new Run(msg.SenderName + ": ")));
+            tb.Inlines.Add(new Run(msg.Content));
+            tb.Background = new SolidColorBrush(msg.Color);
+            tb.FontSize = msg.FontSize();
+            tb.MouseUp += tb_MouseUp;
+            tb.Tag = msg.Id;
 
-            sv.Height = msg.Size(level);
-            sv.Width = msg.Size(level);
-            tb.FontSize = msg.FontSize(level);
-
-            if (msg.Id == 58) Console.WriteLine("ID=" + msg.Id + " Level" + level);
-
-            if (level == 0 || level == 1)
-            {
-                //正常显示
-                tb.Background = new SolidColorBrush(msg.Color);
-                tb.Foreground = Brushes.Black;
-            }
-            else
-            {
-                //弱显示
-                tb.Background = new SolidColorBrush(msg.LightColor);
-                tb.Foreground = new SolidColorBrush(Message.LightFontColor);
-            }
-
-            if (!sv.IsVisible)
-            {
-                if (level == 0)
-                {
-                    //正中间
-                    sv.Margin = new Thickness(0);
-                }
-                else if (level >= -1)
-                {   
-                    //儿子位置正关联
-                    ScrollViewer sv0 = MainGrid.FindName("scrollViewer" + msg.Father) as ScrollViewer;
-                    if (sv0 != null)
-                    {
-                        double distance = sv0.Width + sv.Width - randomMove / 2 + random.Next(randomMove);
-                        sv.Margin = Message.Position(msg.Place, distance, sv0.Margin);
-                    }
-                }
-                else if (level == -2)
-                {
-                    //父亲位置负关联
-                    ScrollViewer sv0 = MainGrid.FindName("scrollViewer" + currentCenterId) as ScrollViewer;
-                    Message m0 = MessagesKeeper.Get(currentCenterId);
-                    if (sv0 != null && m0 != null)
-                    {
-                        double distance = sv0.Width + sv.Width - randomMove / 2 + random.Next(randomMove);
-                        sv.Margin = Message.Position(m0.Place, distance, sv0.Margin, -1);
-                    }
-                }
-            }
-
-            sv.Visibility = Visibility.Visible;
+            sv.Content = tb;
 
             return sv;
         }
+
+        //Message页面下的UI控制
         private void ShowMessage()
         {
             scrollIndex.Visibility = Visibility.Collapsed;
@@ -306,6 +223,90 @@ namespace Circles
                 }
             }
         }
+        private ScrollViewer getTextBlock(Message msg, int level = 0)
+        {
+            ScrollViewer sv = null;
+            TextBlock tb = null;
+
+            //查找目标UI是否已存在于容器
+            sv = MainGrid.FindName("scrollViewer" + msg.Id) as ScrollViewer;
+            if (sv == null)
+            {
+                //没有找到，新建UI
+                sv = new ScrollViewer();
+                tb = new TextBlock();
+
+                sv.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                tb.TextWrapping = TextWrapping.Wrap;
+                tb.Inlines.Add(new Bold(new Run(msg.SenderName + ": ")));
+                tb.Inlines.Add(new Run(msg.Content));
+                tb.Background = new SolidColorBrush(msg.Color);
+                tb.MouseUp += tb_MouseUp;
+                tb.Tag = msg.Id;
+                sv.Content = tb;
+            }
+            else
+            {
+                ////已经正常显示则不修改
+                //if (sv.IsVisible) return sv;
+                //否则进行微调
+                tb = sv.Content as TextBlock;
+            }
+
+            sv.Height = msg.Size(level);
+            sv.Width = msg.Size(level);
+            tb.FontSize = msg.FontSize(level);
+
+            if (msg.Id == 58) Console.WriteLine("ID=" + msg.Id + " Level" + level);
+
+            if (level == 0 || level == 1)
+            {
+                //正常显示
+                tb.Background = new SolidColorBrush(msg.Color);
+                tb.Foreground = Brushes.Black;
+            }
+            else
+            {
+                //弱显示
+                tb.Background = new SolidColorBrush(msg.LightColor);
+                tb.Foreground = new SolidColorBrush(Message.LightFontColor);
+            }
+
+            if (!sv.IsVisible)
+            {
+                if (level == 0)
+                {
+                    //正中间
+                    sv.Margin = new Thickness(0);
+                }
+                else if (level >= -1)
+                {
+                    //儿子位置正关联
+                    ScrollViewer sv0 = MainGrid.FindName("scrollViewer" + msg.Father) as ScrollViewer;
+                    if (sv0 != null)
+                    {
+                        double distance = sv0.Width + sv.Width - randomMove / 2 + random.Next(randomMove);
+                        sv.Margin = Message.Position(msg.Place, distance, sv0.Margin);
+                    }
+                }
+                else if (level == -2)
+                {
+                    //父亲位置负关联
+                    ScrollViewer sv0 = MainGrid.FindName("scrollViewer" + currentCenterId) as ScrollViewer;
+                    Message m0 = MessagesKeeper.Get(currentCenterId);
+                    if (sv0 != null && m0 != null)
+                    {
+                        double distance = sv0.Width + sv.Width - randomMove / 2 + random.Next(randomMove);
+                        sv.Margin = Message.Position(m0.Place, distance, sv0.Margin, -1);
+                    }
+                }
+            }
+
+            sv.Visibility = Visibility.Visible;
+
+            return sv;
+        }
+
         //将Message页面清空
         private void ClearMessages()
         {

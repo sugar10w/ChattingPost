@@ -59,10 +59,11 @@
 - //信息发送时间 time 
 
 ## 用户 -> 服务器 "action"
+- user 发送本用户信息
 - get 请求指定ID的Mesaage
 - send 发送跟帖
 
 ## 服务器 -> 用户 "action"
-- user 发送用户登录信息
+- user 发送用户登录情况信息
 - get 发送指定ID的Message
 - send 发送系统信息

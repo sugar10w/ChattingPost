@@ -25,7 +25,7 @@ namespace Circles
         private DispatcherTimer timer;
         private static Random random = new Random();
 
-        //构造函数
+        //页面初始布置
         public MainWindow()
         {
             InitializeComponent();
@@ -36,8 +36,6 @@ namespace Circles
             rect3.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-144));
             rect4.Fill = new SolidColorBrush(MyColor.HSI(currentColorId-72));
         }
-
-        //页面已载入
         private void Grid_Loaded_1(object sender, RoutedEventArgs e)
         {
             timer = new DispatcherTimer();
@@ -48,7 +46,7 @@ namespace Circles
             Keyboard.Focus(textBoxUserName);
         }
 
-        //定时检查
+        //定时检查：动画控制+用户登录检查
         private void timer1_Tick(object sender, EventArgs e)
         {
             //颜色动画控制

@@ -19,7 +19,8 @@ namespace Circles
         static string host = "127.0.0.1";        
         static Socket soc;
 
-        static public User user = null;
+        static private User user = null;
+        static public User User { get { return user; } }
 
         //连接服务器
         public static int ConnectServer(string name,string password="")
@@ -30,7 +31,6 @@ namespace Circles
             IPEndPoint ipe = new IPEndPoint(ip, port);
 
             soc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
             try
             {
                 soc.Connect(ipe);
@@ -41,18 +41,8 @@ namespace Circles
                 return 1;
             }
 
-            StringWriter sw = new StringWriter();
-            JsonWriter writer = new JsonTextWriter(sw);
-            writer.WriteStartObject();            
-            writer.WritePropertyName("nickname"); writer.WriteValue(user.NickName);
-            writer.WritePropertyName("password"); writer.WriteValue(user.Password);
-            writer.WritePropertyName("colorId"); writer.WriteValue(user.ColorId);
-            writer.WriteEndObject();
-            writer.Flush();
-            Send(sw.GetStringBuilder().ToString());
-
+            sendUserInfo();
             startListening();
-
             MessagesKeeper.Get(0, 3);
 
             return 0;
@@ -93,7 +83,7 @@ namespace Circles
                         int t = 0, cnt = 0;
                         while (s[t] != '{' && t < s.Length) ++t;
                         ++cnt;
-                        while (cnt > 0 && t < s.Length)
+                        while (cnt > 0 && t < s.Length - 1)
                         {
                             ++t;
                             if (s[t] == '{') ++cnt;
@@ -117,6 +107,7 @@ namespace Circles
                     }
                     catch
                     {
+                        Console.WriteLine("数据解析失败。");
                         break;
                     }
                 }
@@ -131,7 +122,22 @@ namespace Circles
             threadListening.Abort();
         }
 
-        //接收的UI的发帖请求，向服务器发送"send"请求
+        //向服务器发送"user"信息
+        private static int sendUserInfo()
+        {
+            StringWriter sw = new StringWriter();
+            JsonWriter writer = new JsonTextWriter(sw);
+            writer.WriteStartObject();
+            writer.WritePropertyName("action"); writer.WriteValue("user");
+            writer.WritePropertyName("nickname"); writer.WriteValue(User.NickName);
+            writer.WritePropertyName("password"); writer.WriteValue(User.Password);
+            writer.WritePropertyName("colorId"); writer.WriteValue(User.ColorId);
+            writer.WriteEndObject();
+            writer.Flush();
+            return Send(sw.GetStringBuilder().ToString());
+        }
+
+        //接收的UI的发帖请求，向服务器发送"send"新帖子
         public static int Submit(String s,int fatherId=0)
         {
             s = s.Trim();
@@ -140,8 +146,8 @@ namespace Circles
             JsonWriter writer = new JsonTextWriter(sw);
             writer.WriteStartObject();
             writer.WritePropertyName("action"); writer.WriteValue("send");
-            writer.WritePropertyName("senderName"); writer.WriteValue(user.NickName); 
-            writer.WritePropertyName("colorId"); writer.WriteValue(user.ColorId);
+            writer.WritePropertyName("senderName"); writer.WriteValue(User.NickName); 
+            writer.WritePropertyName("colorId"); writer.WriteValue(User.ColorId);
             writer.WritePropertyName("content"); writer.WriteValue(s);
             writer.WritePropertyName("father"); writer.WriteValue(fatherId);
             writer.WriteEndObject();
@@ -174,7 +180,7 @@ namespace Circles
             }
             catch (SocketException e)
             {
-                InfoBox.AddInfo("服务器连接错误！您已经离线。[Sending failed]");
+                InfoBox.AddInfo("服务器连接错误！您已离线。[Sending failed]");
                 return 1;
             }
 
