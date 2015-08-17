@@ -80,6 +80,9 @@ s.send(json.dumps(j0));
 t = threading.Thread(target=listenning, args=(s, addr))
 t.start()
 
+
+print "Type \"Enter\" to check messages.  Type \"s\" to Send messages."
+
 while True:
 	action=raw_input();
 	if (not LOGINFLAG):
