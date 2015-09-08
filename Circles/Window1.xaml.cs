@@ -41,12 +41,15 @@ namespace Circles
             TextSysInfo.Background = new SolidColorBrush(user.LightColor);
 
             ButtonBack.PreviewMouseUp += ButtonBack_PreviewMouseUp;
+            ButtonBack.MouseEnter += ButtonBack_MouseEnter;
+            ButtonBack.MouseLeave += ButtonBack_MouseLeave;
+
             labelUserName.MouseUp += labelUserName_MouseUp;
         }
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(200);
+            timer.Interval = TimeSpan.FromMilliseconds(500);
             timer.Tick += timer1_Tick;
             timer.Start();
 
@@ -60,6 +63,19 @@ namespace Circles
             GoTo(msg.Father);
 
         }
+        void ButtonBack_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Label lb = (Label)sender;
+            lb.Background = new SolidColorBrush(user.Color);
+        }
+        void ButtonBack_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+            Label lb = (Label)sender;
+            lb.Background = new SolidColorBrush(Color.FromArgb(255, user.Color.R, user.Color.G, user.Color.B));
+
+        }
+
         void labelUserName_MouseUp(object sender, MouseButtonEventArgs e)
         {
             GoTo(0);
@@ -93,9 +109,24 @@ namespace Circles
         void tb_MouseUp(object sender, MouseButtonEventArgs e)
         {
             TextBlock tb = sender as TextBlock;
-            int id = (int)tb.Tag;
+            int id = ((Message)tb.Tag).Id;
 
             GoTo(id);
+        }
+        void tb_MouseLeave(object sender, MouseEventArgs e)
+        {
+            TextBlock tb = (TextBlock)sender;
+            Message msg = (Message)tb.Tag;
+            tb.Background = new SolidColorBrush(msg.Color);
+
+        }
+        void tb_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+            TextBlock tb = (TextBlock)sender;
+            Message msg = (Message)tb.Tag;
+            tb.Background = new SolidColorBrush(Color.FromArgb(200, msg.Color.R, msg.Color.G, msg.Color.B));
+
         }
 
         //Index页面下的UI控制
@@ -144,7 +175,11 @@ namespace Circles
             tb.Background = new SolidColorBrush(msg.Color);
             tb.FontSize = msg.FontSize();
             tb.MouseUp += tb_MouseUp;
-            tb.Tag = msg.Id;
+
+            tb.MouseEnter += tb_MouseEnter;
+            tb.MouseLeave += tb_MouseLeave;
+
+            tb.Tag = msg;
 
             sv.Content = tb;
 
@@ -242,19 +277,26 @@ namespace Circles
                 tb.Inlines.Add(new Run(msg.Content));
                 tb.Background = new SolidColorBrush(msg.Color);
                 tb.MouseUp += tb_MouseUp;
-                tb.Tag = msg.Id;
+
+                tb.MouseEnter += tb_MouseEnter;
+                tb.MouseLeave += tb_MouseLeave;
+
+                tb.Tag = msg;
+                
                 sv.Content = tb;
+                sv.Tag = currentCenterId;
             }
             else
             {
                 ////已经正常显示则不修改
-                //if (sv.IsVisible) return sv;
+                if (sv.IsVisible && (int)sv.Tag == currentCenterId) return sv;
                 //否则进行微调
                 tb = sv.Content as TextBlock;
             }
 
             sv.Height = msg.Size(level);
             sv.Width = msg.Size(level);
+            sv.Tag = currentCenterId;
             tb.FontSize = msg.FontSize(level);
 
             if (level == 0 || level == 1)
@@ -322,8 +364,10 @@ namespace Circles
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (cntDownSysInfo > 0) --cntDownSysInfo;
+
             if (cntDownSysInfo > 0) TextSysInfo.Visibility = Visibility.Visible;
             else TextSysInfo.Visibility = Visibility.Collapsed;
+            
             if (InfoBox.Refreshed)
             {
                 TextSysInfo.Text = InfoBox.Info;

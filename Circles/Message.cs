@@ -181,6 +181,6 @@ namespace Circles
             return size;
         }
         
-        static public Color LightFontColor = Color.FromArgb(100, 0, 0, 0);
+        static public Color LightFontColor = Color.FromArgb(150, 0, 0, 0);
     }
 }
