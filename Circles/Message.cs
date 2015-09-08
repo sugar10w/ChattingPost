@@ -85,7 +85,7 @@ namespace Circles
                 r = father.Right,
                 b = father.Bottom;
 
-            distance -= 50;
+         //   distance -= 50;
             distance = distance * ((pos / 12) * 2 + 3) / 3;
             pos %= 12;
 

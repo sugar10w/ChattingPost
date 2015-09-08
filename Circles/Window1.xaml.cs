@@ -23,8 +23,8 @@ namespace Circles
         User user;
         int currentCenterId = 0;
         DispatcherTimer timer;
-        Random random = new Random();
-        int randomMove = 20;
+      //  Random random = new Random();
+      //  int randomMove = 20;
 
         int cntDownSysInfoMax = 10, cntDownSysInfo = 0;
 
@@ -257,8 +257,6 @@ namespace Circles
             sv.Width = msg.Size(level);
             tb.FontSize = msg.FontSize(level);
 
-            if (msg.Id == 58) Console.WriteLine("ID=" + msg.Id + " Level" + level);
-
             if (level == 0 || level == 1)
             {
                 //正常显示
@@ -285,7 +283,7 @@ namespace Circles
                     ScrollViewer sv0 = MainGrid.FindName("scrollViewer" + msg.Father) as ScrollViewer;
                     if (sv0 != null)
                     {
-                        double distance = sv0.Width + sv.Width - randomMove / 2 + random.Next(randomMove);
+                        double distance = sv0.Width + sv.Width;// -randomMove / 2 + random.Next(randomMove);
                         sv.Margin = Message.Position(msg.Place, distance, sv0.Margin);
                     }
                 }
@@ -296,7 +294,7 @@ namespace Circles
                     Message m0 = MessagesKeeper.Get(currentCenterId);
                     if (sv0 != null && m0 != null)
                     {
-                        double distance = sv0.Width + sv.Width - randomMove / 2 + random.Next(randomMove);
+                        double distance = sv0.Width + sv.Width;// -randomMove / 2 + random.Next(randomMove);
                         sv.Margin = Message.Position(m0.Place, distance, sv0.Margin, -1);
                     }
                 }

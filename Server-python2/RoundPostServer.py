@@ -196,6 +196,7 @@ def tcplink(sock, addr):
 		elif (j["action"]=="get"):
 			sock.send(getMessage(j["id"]))
 
+#load user info
 try:
 	print "Users...",
 	pkl_file=open('user.pkl','rb');
@@ -205,7 +206,8 @@ try:
 except:
 	registeredUsers=[];
 	print "--- --- FAILED --- ---"
-			
+
+#load Mesaages
 try:
 	print "Messages... ",
 	pkl_file = open('data.pkl', 'rb')

@@ -1,6 +1,10 @@
 bin/
 obj/
+
+*.xls
+
 *.vspx
 *.psess
+
 *.suo
 *.pkl

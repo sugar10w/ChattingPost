@@ -40,7 +40,7 @@ namespace Circles
                     gettingIdList.RemoveAt(0); gettingDeepList.RemoveAt(0); gettingSendedList.RemoveAt(0);
                     gettingIdList.Add(id); gettingDeepList.Add(deep); gettingSendedList.Add(true);
                 }
-                Thread.Sleep(10);
+                Thread.Sleep(50);
             }
         }
 

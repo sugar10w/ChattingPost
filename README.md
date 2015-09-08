@@ -28,10 +28,12 @@
 - Message.cs 每一条帖子
 - User.cs 用户信息
 - MyColor.cs 管理颜色
+
 ### Python 服务器端
 - RoundPostServer.py 主文件，python2.7
 - user.pkl 存储用户名和密码
 - data.pkl 存储所有Messages
+
 ### Python 客户端
 - RoundPostClient.py 主文件，python2.7
 
